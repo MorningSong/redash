@@ -91,7 +91,7 @@ class BaseElasticSearch(BaseQueryRunner):
 
             logger.setLevel(logging.DEBUG)
 
-        self.server_url = self.configuration["server"]
+        self.server_url = self.configuration.get("server", "")
         if self.server_url[-1] == "/":
             self.server_url = self.server_url[:-1]
 
@@ -129,6 +129,8 @@ class BaseElasticSearch(BaseQueryRunner):
         for index_name in mappings_data:
             index_mappings = mappings_data[index_name]
             for m in index_mappings.get("mappings", {}):
+                if not isinstance(index_mappings["mappings"][m], dict):
+                    continue
                 if "properties" not in index_mappings["mappings"][m]:
                     continue
                 for property_name in index_mappings["mappings"][m]["properties"]:
